@@ -425,6 +425,20 @@ class TestKernel < Test::Unit::TestCase
     assert t2 >= t1 + 0.08
   end
 
+  def test_interrupted_sleep
+    queue = Queue.new
+    ruby_thread = Thread.start do
+      queue << java.lang.Thread.current_thread
+      sleep 5
+    end
+    started_at = Time.now
+    native_thread = queue.pop
+    native_thread.interrupt
+    ruby_thread.join
+    time_taken = Time.now - started_at
+    assert time_taken < 5
+  end
+
   def test_sprintf
     assert_equal 'Hello', Kernel.sprintf('Hello')
   end
