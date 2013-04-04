@@ -797,11 +797,7 @@ public class RubyKernel {
         // Spurious wakeup-loop
         do {
             long loopStartTime = System.currentTimeMillis();
-            try {
-                // We break if we know this sleep was explicitly woken up/interrupted
-                if (!rubyThread.sleep(milliseconds)) break;
-            } catch (InterruptedException iExcptn) {
-            }
+            if (!rubyThread.sleep(milliseconds)) break;
             milliseconds -= (System.currentTimeMillis() - loopStartTime);
         } while (milliseconds > 0);
 
