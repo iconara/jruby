@@ -439,6 +439,18 @@ class TestKernel < Test::Unit::TestCase
     assert time_taken < 5
   end
 
+  def test_interrupted_sleep_with_thread_pool
+    thread_pool = java.util.concurrent.Executors.new_cached_thread_pool
+    thread_pool.execute do
+      sleep 5
+    end
+    started_at = Time.now
+    thread_pool.shutdown_now
+    thread_pool.await_termination(10, java.util.concurrent.TimeUnit::SECONDS)
+    time_taken = Time.now - started_at
+    assert time_taken < 5
+  end
+
   def test_sprintf
     assert_equal 'Hello', Kernel.sprintf('Hello')
   end
